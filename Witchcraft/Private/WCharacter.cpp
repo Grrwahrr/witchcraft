@@ -88,7 +88,43 @@ void AWCharacter::OnRep_Controller()
 		AbilitySystemComponent->RefreshAbilityActorInfo();
 	}
 }
-	
+
+void AWCharacter::StatIncreaseDamageToEnemies(float Damage)
+{
+	StatDamageToEnemies += Damage;
+}
+
+void AWCharacter::StatIncreaseDamageToFriends(float Damage)
+{
+	StatDamageToFriends += Damage;
+}
+
+void AWCharacter::StatIncrementKilledEnemies()
+{
+	StatKilledEnemies++;
+}
+
+void AWCharacter::StatIncrementKilledFriends()
+{
+	StatKilledFriends++;
+}
+
+void AWCharacter::StatIncrementDeaths()
+{
+	StatDeaths++;
+}
+
+void AWCharacter::StatGetAll(float& DamageToEnemies, float& DamageToFriends, int32& KilledEnemies, int32& KilledFriends, int32& Deaths)
+{
+	DamageToEnemies = StatDamageToEnemies;
+	DamageToFriends = StatDamageToFriends;
+	KilledEnemies = StatKilledEnemies;
+	KilledFriends = StatKilledFriends;
+	Deaths = StatDeaths;
+}
+
+
+
 // Called every frame
 void AWCharacter::Tick(float DeltaTime)
 {

@@ -22,10 +22,11 @@ class WITCHCRAFT_API AWCharacter : public ACharacter, public IAbilitySystemInter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AWCharacter();
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_Controller() override;
+	virtual void Tick(float DeltaTime) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	/** Ability System Component. Required to use Gameplay Attributes and Gameplay Abilities. */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
@@ -76,6 +77,9 @@ public:
 	void CallSetEquippedSpellsByEvent(float EncodedValue) const;
 
 
+	// -------------------------------------------
+	// --- Gameplay Attribute OnChange Handlers --
+	// -------------------------------------------
 	
 	/** Function to bind to Attribute Changed delegate. Calls On Health Changed. */
 	void OnHealthChangedInternal(const FOnAttributeChangeData& Data);
@@ -91,9 +95,16 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="Abilities|Attributes")
     void OnEquippedSpellsChanged(EWMagicType OldLeftMagicType, EWMagicElement OldLeftMagicElement, EWMagicType OldRightMagicType, EWMagicElement OldRightMagicElement, EWMagicType NewLeftMagicType, EWMagicElement NewLeftMagicElement, EWMagicType NewRightMagicType, EWMagicElement NewRightMagicElement);
 
+
+	
 	/** Grants an ability at the given level */
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
     void GrantAbility(TSubclassOf<UGameplayAbility> AbilityClass, int32 Level, int32 InputCode);
+
+
+	// -------------------------------------------
+	// ------------ Damage calculation -----------
+	// -------------------------------------------
 
 	/** Blueprint callable function to calculate the damaged inflicted by a spell (WMagicActor) */
 	UFUNCTION(BlueprintPure, Category="Abilities|Attributes")
@@ -107,33 +118,22 @@ public:
 	UFUNCTION(BlueprintPure, Category="Abilities|Attributes")
     void CalculateIncomingRangedDamage(AWMagicActor* WMagicActor, float& ActualDamage) const;
 
+
+	
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	/** Apply the startup gameplay abilities and effects */
-	void InitializeAbilitiesAndEffects();
-
-	/** If true we have initialized our abilities */
-	int32 AbilitiesInitialized;
-
-	/**  Cache this tag so we can refer to it when required */
-	static FGameplayTag TagSetEquippedSkills;
-
-	static FGameplayTag TagSpellUnknown;
-
-	static uint8 TagsCached;
-
-	/** Cache the tags for each spell the player can cast */
-	static TMap<uint16, FGameplayTagContainer> SpellTags;
-
-	/** Helper function used to create a tag map */
-	static void CacheGameplayTags();
-
 	/** Character Attribute Set. UPROPERTY macro required for reflection. */
 	UPROPERTY()
 	const class UWAttributeSetBase* AttributeSetBase;
+	
 
+	// -------------------------------------------
+	// ------------ Initial Abilities ------------
+	// -------------------------------------------
+	
 	/** Passive gameplay effects applied on creation */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Abilities)
 	TArray<TSubclassOf<UGameplayEffect>> InitialGameplayEffects;
@@ -142,11 +142,57 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Abilities)
 	TArray<TSubclassOf<UGameplayAbility>> InitialGameplayAbilities;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	/** Apply the startup gameplay abilities and effects */
+	void InitializeAbilitiesAndEffects();
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	/** If true we have initialized our abilities */
+	int32 AbilitiesInitialized;
 
+	
+	// -------------------------------------------
+	// ---------- Cache Gameplay Tags ------------
+	// -------------------------------------------
+
+	/**  We cache some tags so we can refer to them at will */
+	static uint8 TagsCached;								// Whether we cached the tags or not
+	static void CacheGameplayTags();						// Setup the cache data
+	static FGameplayTag TagSetEquippedSkills;				// The ability to switch equipped spells
+	static FGameplayTag TagSpellUnknown;					// General error tag
+	static TMap<uint16, FGameplayTagContainer> SpellTags;	// Abilities representing spells for the player to cast
+
+
+	// -------------------------------------------
+	// --------------- Statistics ----------------
+	// -------------------------------------------
+
+	// Some statistics we track while a level is playing
+	float StatDamageToEnemies = 0;
+	float StatDamageToFriends = 0;
+	int32 StatKilledEnemies = 0;
+	int32 StatKilledFriends = 0;
+	int32 StatDeaths = 0;
+
+	/** Increase the damage to enemies by the given value */
+	UFUNCTION(BlueprintCallable, Category="Statistics")
+	void StatIncreaseDamageToEnemies(float Damage);
+
+	/** Increase the damage to friends by the given value */
+	UFUNCTION(BlueprintCallable, Category="Statistics")
+	void StatIncreaseDamageToFriends(float Damage);
+
+	/** Increase the killed enemies count by one */
+	UFUNCTION(BlueprintCallable, Category="Statistics")
+	void StatIncrementKilledEnemies();
+
+	/** Increase the killed friends count by one */
+	UFUNCTION(BlueprintCallable, Category="Statistics")
+	void StatIncrementKilledFriends();
+
+	/** Increase the death count by one */
+	UFUNCTION(BlueprintCallable, Category="Statistics")
+	void StatIncrementDeaths();
+
+	/** Return all available statistics */
+	UFUNCTION(BlueprintCallable, Category="Statistics")
+	void StatGetAll(float& DamageToEnemies, float& DamageToFriends, int32& KilledEnemies, int32& KilledFriends, int32& Deaths);
 };
