@@ -27,6 +27,7 @@ public:
 	virtual void OnRep_Controller() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	/** Ability System Component. Required to use Gameplay Attributes and Gameplay Abilities. */
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
@@ -95,6 +96,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="Abilities|Attributes")
     void OnEquippedSpellsChanged(EWMagicType OldLeftMagicType, EWMagicElement OldLeftMagicElement, EWMagicType OldRightMagicType, EWMagicElement OldRightMagicElement, EWMagicType NewLeftMagicType, EWMagicElement NewLeftMagicElement, EWMagicType NewRightMagicType, EWMagicElement NewRightMagicElement);
 
+	/** Function to bind to Attribute Changed delegate. Calls OnMoveSpeedChanged. */
+	void OnMoveSpeedChangedInternal(const FOnAttributeChangeData& Data);
+
+	/** Blueprint-implementable On Health Changed event. Used to send information to the UI about current health. */
+	UFUNCTION(BlueprintImplementableEvent, Category="Abilities|Attributes")
+    void OnMoveSpeedChanged(float OldValue, float NewValue);
 
 	
 	/** Grants an ability at the given level */
@@ -147,6 +154,23 @@ protected:
 
 	/** If true we have initialized our abilities */
 	int32 AbilitiesInitialized;
+
+
+	// -------------------------------------------
+	// --------------- PlayerColor ---------------
+	// -------------------------------------------
+
+	/** The Players Skin Color */
+	//UPROPERTY(BlueprintReadOnly, Category = "PlayerColor", ReplicatedUsing = OnRep_PlayerColor)
+	//EWPlayerColor PlayerColor;
+	
+	/** Notify function if the players color changed */
+	///UFUNCTION(BlueprintNativeEvent, Category="PlayerColor")
+    //void OnRep_PlayerColor();
+
+	/** RPC to set the color of a player */
+	//UFUNCTION( Server, Reliable )
+	//void ServerSetUniqueWitchColor();
 
 	
 	// -------------------------------------------

@@ -59,6 +59,17 @@ enum class EWEffectSpecWrapperType : uint8
     ModHealth	= 1		UMETA(DisplayName = "ModHealth"),
 };
 
+/** These are the possible player colors */
+UENUM(BlueprintType)
+enum class EWPlayerColor : uint8
+{
+	None	= 0		UMETA(DisplayName = "None"),
+	Blue	= 1		UMETA(DisplayName = "Blue"),
+    Red		= 2		UMETA(DisplayName = "Red"),
+	Purple	= 3		UMETA(DisplayName = "Purple"),
+	Green	= 4		UMETA(DisplayName = "Green"),
+};
+
 /** Struct representing a wrapped gameplay effect spec */
 USTRUCT(BlueprintType)
 struct WITCHCRAFT_API FWEffectSpecWrapper

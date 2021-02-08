@@ -4,8 +4,9 @@
 #include "WCharacter.h"
 
 #include "AbilitySystemComponent.h"
-#include "GeneratedCodeHelpers.h"
+#include "Net/UnrealNetwork.h"
 #include "WAttributeSetBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 uint8 AWCharacter::TagsCached = 0;
 FGameplayTag AWCharacter::TagSetEquippedSkills;
@@ -17,6 +18,7 @@ AWCharacter::AWCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	SetReplicates(true);
 
 	// Add an Ability System Component to this character
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("Ability System Component"));
@@ -32,8 +34,6 @@ AWCharacter::AWCharacter()
 	//AttributeSetBase = CreateDefaultSubobject<UWAttributeSetBase>(TEXT("AttributeSetBase"));
 	//NOTE: This didnt actually work - GETTER would alwaays be 0
 	// I Use AttributeSetBase = AbilitySystemComponent->GetSet<UWAttributeSetBase>(); instead
-
-
 
 	AbilitiesInitialized = false;
 }
@@ -54,9 +54,22 @@ void AWCharacter::BeginPlay()
 		// GetGameplayAttributeValueChangedDelegate will enable you to bind delegates without programming them manually
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetHealthAttribute()).AddUObject(this, &AWCharacter::OnHealthChangedInternal);
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetEquippedSpellsAttribute()).AddUObject(this, &AWCharacter::OnEquippedSpellsChangedInternal);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetMoveSpeedAttribute()).AddUObject(this, &AWCharacter::OnMoveSpeedChangedInternal);
 
 		// Cache the tag we use for equipping skills
 		CacheGameplayTags();
+	}
+
+	// Should I assign default spells?
+	if (IsValid(AttributeSetBase))
+	{
+		FFloat2Bytes F2B;
+		F2B.F		= 0;
+		F2B.B[0]	= static_cast<uint8>(EWMagicType::Projectile);
+		F2B.B[1]	= static_cast<uint8>(EWMagicElement::Fire);
+		F2B.B[2]	= static_cast<uint8>(EWMagicType::Projectile);
+		F2B.B[3]	= static_cast<uint8>(EWMagicElement::Ice);
+		CallSetEquippedSpellsByEvent(F2B.F);
 	}
 }
 
@@ -76,6 +89,17 @@ void AWCharacter::PossessedBy(AController* NewController)
 
 	// ASC MixedMode replication requires that the ASC Owner's Owner be the Controller.
 	SetOwner(NewController);
+
+	// Assign a unique color to this player- TODO this should be in player state as there will be other kinds of actors inheriting from this
+	//if (HasAuthority())
+	//{
+	//	PlayerColor = AvailableColors.Pop();
+		//The server will have to call this manually as it would not do so otherwise
+	//	OnRep_PlayerColor();
+	//}
+	// This seems to be a pretty piss poor way of doing it
+	// Starting a second PIE session will crash cause no more colors are left
+	// I should reiterate on this-- create it in player state and set the color from there
 }
 
 void AWCharacter::OnRep_Controller()
@@ -258,7 +282,13 @@ void AWCharacter::OnEquippedSpellsChangedInternal(const FOnAttributeChangeData& 
     );
 }
 
-//Getters for Health
+void AWCharacter::OnMoveSpeedChangedInternal(const FOnAttributeChangeData& Data)
+{
+	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
+	OnMoveSpeedChanged(Data.OldValue, Data.NewValue);
+}
+
+// Getters for Health
 float AWCharacter::GetHealth() const
 {
 	if (IsValid(AttributeSetBase))
@@ -340,7 +370,7 @@ void AWCharacter::CacheGameplayTags()
 	// We only need to do this once
 	if ( TagsCached == 1 )
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Already cached %f"), 0.f));
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Already cached %f"), 0.f));
 		return;
 	}
 	TagsCached = 1;
@@ -470,3 +500,23 @@ void AWCharacter::CallSetEquippedSpellsByEvent(float EncodedValue) const
 	// Call the SetEquippedSkills event
 	AbilitySystemComponent->HandleGameplayEvent(TagSetEquippedSkills, &EventData);
 }
+
+
+void AWCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+ 	
+//	DOREPLIFETIME_CONDITION_NOTIFY( AWCharacter, PlayerColor, COND_None, REPNOTIFY_Always );
+}
+
+//void AWCharacter::OnRep_PlayerColor_Implementation()
+//{
+	// This should be implemented in blueprint - this is just here because it has to be
+//}
+
+//void AWCharacter::ServerSetUniqueWitchColor_Implementation()
+//{
+	// Check what witch colors have not yet been assigned and assign one
+//	PlayerColor = AvailableColors.Pop();
+//	GEngine->AddOnScreenDebugMessage(-1, 20.0f, FColor::Red, FString::Printf(TEXT("Call to set color on server %f"), 0.f));	
+//}
