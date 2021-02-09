@@ -155,23 +155,6 @@ protected:
 	/** If true we have initialized our abilities */
 	int32 AbilitiesInitialized;
 
-
-	// -------------------------------------------
-	// --------------- PlayerColor ---------------
-	// -------------------------------------------
-
-	/** The Players Skin Color */
-	//UPROPERTY(BlueprintReadOnly, Category = "PlayerColor", ReplicatedUsing = OnRep_PlayerColor)
-	//EWPlayerColor PlayerColor;
-	
-	/** Notify function if the players color changed */
-	///UFUNCTION(BlueprintNativeEvent, Category="PlayerColor")
-    //void OnRep_PlayerColor();
-
-	/** RPC to set the color of a player */
-	//UFUNCTION( Server, Reliable )
-	//void ServerSetUniqueWitchColor();
-
 	
 	// -------------------------------------------
 	// ---------- Cache Gameplay Tags ------------
@@ -183,40 +166,4 @@ protected:
 	static FGameplayTag TagSetEquippedSkills;				// The ability to switch equipped spells
 	static FGameplayTag TagSpellUnknown;					// General error tag
 	static TMap<uint16, FGameplayTagContainer> SpellTags;	// Abilities representing spells for the player to cast
-
-
-	// -------------------------------------------
-	// --------------- Statistics ----------------
-	// -------------------------------------------
-
-	// Some statistics we track while a level is playing
-	float StatDamageToEnemies = 0;
-	float StatDamageToFriends = 0;
-	int32 StatKilledEnemies = 0;
-	int32 StatKilledFriends = 0;
-	int32 StatDeaths = 0;
-
-	/** Increase the damage to enemies by the given value */
-	UFUNCTION(BlueprintCallable, Category="Statistics")
-	void StatIncreaseDamageToEnemies(float Damage);
-
-	/** Increase the damage to friends by the given value */
-	UFUNCTION(BlueprintCallable, Category="Statistics")
-	void StatIncreaseDamageToFriends(float Damage);
-
-	/** Increase the killed enemies count by one */
-	UFUNCTION(BlueprintCallable, Category="Statistics")
-	void StatIncrementKilledEnemies();
-
-	/** Increase the killed friends count by one */
-	UFUNCTION(BlueprintCallable, Category="Statistics")
-	void StatIncrementKilledFriends();
-
-	/** Increase the death count by one */
-	UFUNCTION(BlueprintCallable, Category="Statistics")
-	void StatIncrementDeaths();
-
-	/** Return all available statistics */
-	UFUNCTION(BlueprintCallable, Category="Statistics")
-	void StatGetAll(float& DamageToEnemies, float& DamageToFriends, int32& KilledEnemies, int32& KilledFriends, int32& Deaths);
 };

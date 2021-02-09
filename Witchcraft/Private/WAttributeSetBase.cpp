@@ -43,16 +43,12 @@ void UWAttributeSetBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
 void UWAttributeSetBase::OnRep_EquippedSpells(const FGameplayAttributeData& OldEquippedSpells)
 {
-	// How can i do stuff in blueprint from this?
-	//const float current = EquippedSpells.GetCurrentValue();
-	//const float old = OldEquippedSpells.GetCurrentValue();
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("OnRep_EquippedSpells %f, %f"), current, old));
-
-	
+	// WCharacter can listen to changes to this attribute and do additional things
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UWAttributeSetBase, EquippedSpells, OldEquippedSpells);
 }
 
 void UWAttributeSetBase::OnRep_MoveSpeed(const FGameplayAttributeData& OldMoveSpeed)
 {
+	// WCharacter can listen to changes to this attribute and do additional things
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UWAttributeSetBase, MoveSpeed, OldMoveSpeed);
 }

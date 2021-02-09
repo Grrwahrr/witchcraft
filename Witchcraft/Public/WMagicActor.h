@@ -54,6 +54,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Magic)
 	float DamageMax;
 
+	/** Impact force used in hit reactions */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Magic)
+	float ImpactForce;
+
 	/** Blast radius on detonation */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Magic)
 	float BlastRadius;

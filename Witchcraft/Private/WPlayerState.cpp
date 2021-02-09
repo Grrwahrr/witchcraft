@@ -37,3 +37,29 @@ void AWPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
 }
+
+void AWPlayerState::StatIncreaseDamageDealt(float InDamageToFriends, float InDamageToEnemies)
+{
+	StatDamageToFriends += InDamageToFriends;
+	StatDamageToEnemies += InDamageToEnemies;
+}
+
+void AWPlayerState::StatIncreaseKills(int32 InKilledFriends, int32 InKilledEnemies)
+{
+	StatKilledFriends += InKilledFriends;
+	StatKilledEnemies += InKilledEnemies;
+}
+
+void AWPlayerState::StatIncrementDeaths()
+{
+	StatDeaths++;
+}
+
+void AWPlayerState::StatGetAll(float& DamageToEnemies, float& DamageToFriends, int32& KilledEnemies, int32& KilledFriends, int32& Deaths)
+{
+	DamageToEnemies = StatDamageToEnemies;
+	DamageToFriends = StatDamageToFriends;
+	KilledEnemies = StatKilledEnemies;
+	KilledFriends = StatKilledFriends;
+	Deaths = StatDeaths;
+}

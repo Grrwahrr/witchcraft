@@ -89,17 +89,6 @@ void AWCharacter::PossessedBy(AController* NewController)
 
 	// ASC MixedMode replication requires that the ASC Owner's Owner be the Controller.
 	SetOwner(NewController);
-
-	// Assign a unique color to this player- TODO this should be in player state as there will be other kinds of actors inheriting from this
-	//if (HasAuthority())
-	//{
-	//	PlayerColor = AvailableColors.Pop();
-		//The server will have to call this manually as it would not do so otherwise
-	//	OnRep_PlayerColor();
-	//}
-	// This seems to be a pretty piss poor way of doing it
-	// Starting a second PIE session will crash cause no more colors are left
-	// I should reiterate on this-- create it in player state and set the color from there
 }
 
 void AWCharacter::OnRep_Controller()
@@ -111,40 +100,6 @@ void AWCharacter::OnRep_Controller()
 	{
 		AbilitySystemComponent->RefreshAbilityActorInfo();
 	}
-}
-
-void AWCharacter::StatIncreaseDamageToEnemies(float Damage)
-{
-	StatDamageToEnemies += Damage;
-}
-
-void AWCharacter::StatIncreaseDamageToFriends(float Damage)
-{
-	StatDamageToFriends += Damage;
-}
-
-void AWCharacter::StatIncrementKilledEnemies()
-{
-	StatKilledEnemies++;
-}
-
-void AWCharacter::StatIncrementKilledFriends()
-{
-	StatKilledFriends++;
-}
-
-void AWCharacter::StatIncrementDeaths()
-{
-	StatDeaths++;
-}
-
-void AWCharacter::StatGetAll(float& DamageToEnemies, float& DamageToFriends, int32& KilledEnemies, int32& KilledFriends, int32& Deaths)
-{
-	DamageToEnemies = StatDamageToEnemies;
-	DamageToFriends = StatDamageToFriends;
-	KilledEnemies = StatKilledEnemies;
-	KilledFriends = StatKilledFriends;
-	Deaths = StatDeaths;
 }
 
 
@@ -508,15 +463,3 @@ void AWCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
  	
 //	DOREPLIFETIME_CONDITION_NOTIFY( AWCharacter, PlayerColor, COND_None, REPNOTIFY_Always );
 }
-
-//void AWCharacter::OnRep_PlayerColor_Implementation()
-//{
-	// This should be implemented in blueprint - this is just here because it has to be
-//}
-
-//void AWCharacter::ServerSetUniqueWitchColor_Implementation()
-//{
-	// Check what witch colors have not yet been assigned and assign one
-//	PlayerColor = AvailableColors.Pop();
-//	GEngine->AddOnScreenDebugMessage(-1, 20.0f, FColor::Red, FString::Printf(TEXT("Call to set color on server %f"), 0.f));	
-//}
