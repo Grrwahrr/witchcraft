@@ -20,9 +20,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = Beam)
 	TMap<int32,AWMagicBeamSegment*> BeamSegments;
 
-	UPROPERTY(BlueprintReadWrite, Category = Beam)
-	TArray<AActor*> TraceIgnoreActors;
-
 	UFUNCTION(BlueprintCallable, Category = Beam)
 	void BeamContinueTrace(uint8 Num, const FVector& EmitterLocation, const FVector& ForwardVector, float MaxDistance, ECollisionChannel TraceChannel, FHitResult& OutHit);
 };

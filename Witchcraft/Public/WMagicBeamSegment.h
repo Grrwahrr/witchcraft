@@ -15,10 +15,10 @@ class WITCHCRAFT_API AWMagicBeamSegment : public AWMagicActor
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadWrite, Category = BeamSegment)
+	UPROPERTY(BlueprintReadWrite, Category = BeamSegment, Meta = (ExposeOnSpawn="true"))
 	FVector LocationFrom;
 
-	UPROPERTY(BlueprintReadWrite, Category = BeamSegment)
+	UPROPERTY(BlueprintReadWrite, Category = BeamSegment, Meta = (ExposeOnSpawn="true"))
 	FVector LocationTo;
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = BeamSegment)
