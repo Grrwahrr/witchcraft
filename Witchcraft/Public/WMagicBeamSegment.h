@@ -6,6 +6,8 @@
 #include "WMagicActor.h"
 #include "WMagicBeamSegment.generated.h"
 
+class AWMagicBeamEmitter;
+
 /**
  * 
  */
@@ -16,11 +18,26 @@ class WITCHCRAFT_API AWMagicBeamSegment : public AWMagicActor
 
 public:
 	UPROPERTY(BlueprintReadWrite, Category = BeamSegment, Meta = (ExposeOnSpawn="true"))
+	AWMagicBeamEmitter* Emitter;
+	
+	UPROPERTY(BlueprintReadWrite, Category = BeamSegment, Meta = (ExposeOnSpawn="true"))
+	int32 Index;
+	
+	UPROPERTY(BlueprintReadWrite, Category = BeamSegment, Meta = (ExposeOnSpawn="true"))
 	FVector LocationFrom;
 
 	UPROPERTY(BlueprintReadWrite, Category = BeamSegment, Meta = (ExposeOnSpawn="true"))
 	FVector LocationTo;
 
+	UPROPERTY(BlueprintReadWrite, Category = BeamSegment)
+	float Length;
+
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = BeamSegment)
 	void BeamSegmentSetup(const FVector& InFrom, const FVector& InTo);
+
+	UFUNCTION(BlueprintCallable, Category = BeamSegment)
+	void BeamSegmentDeactivate();
+
+	UFUNCTION(BlueprintCallable, Category = BeamSegment)
+	void BeamSegmentActivate();
 };

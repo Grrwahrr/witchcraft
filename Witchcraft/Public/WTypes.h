@@ -5,6 +5,7 @@
 #include "GameplayEffectTypes.h"
 #include "WTypes.generated.h"
 
+class AWMagicBeamEmitter;
 class UGameplayEffect;
 
 
@@ -87,4 +88,53 @@ struct WITCHCRAFT_API FWEffectSpecWrapper
 	/** The Gameplay Effect spec is constructed on BeginPlay in c++ from the provided class */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = GameplayEffectWrapper)
 	FGameplayEffectSpecHandle GameplayEffectSpec;
+};
+
+/** The state of a magic Beam segment */
+USTRUCT(BlueprintType)
+struct WITCHCRAFT_API FWBeamSegmentBackup
+{
+	GENERATED_BODY()
+
+	/** The index the segment has */
+	UPROPERTY(BlueprintReadWrite, Category = SegmentBackup)
+	int32 Index;
+
+	/** The location the segment started at */
+	UPROPERTY(BlueprintReadWrite, Category = SegmentBackup)
+	FVector LocationFrom;
+
+	/** The location the segment ended at */
+	UPROPERTY(BlueprintReadWrite, Category = SegmentBackup)
+	FVector LocationTo;
+};
+
+/** A snapshot of the state of a Beam Emitter */
+USTRUCT(BlueprintType)
+struct WITCHCRAFT_API FWEmitterSnapshot
+{
+	GENERATED_BODY()
+
+	/** The Emitter */
+	UPROPERTY(BlueprintReadWrite, Category = EmitterSnapshot)
+	AWMagicBeamEmitter* Emitter;
+
+	/** Every Beam Segment Location */
+	UPROPERTY(BlueprintReadWrite, Category = EmitterSnapshot)
+	TArray<FWBeamSegmentBackup> BackupLocations;
+};
+
+/** A snapshot of the state of a ALL Beam Emitters */
+USTRUCT(BlueprintType)
+struct WITCHCRAFT_API FWGlobalEmitterSnapshot
+{
+	GENERATED_BODY()
+
+	/** The total number of properly setup emitters */
+	UPROPERTY(BlueprintReadWrite, Category = EmitterSnapshot)
+	int32 NumGoodEmitters;
+
+	/** A snapshot for every Emitter */
+	UPROPERTY(BlueprintReadWrite, Category = EmitterSnapshot)
+	TArray<FWEmitterSnapshot> EmitterSnapshots;
 };
